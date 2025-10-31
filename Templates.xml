@@ -1,0 +1,377 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+<Script file="Templates.lua"/>
+
+<Frame name="EasyDestroyEditBoxTemplate" virtual="true" mixin="EasyDestroyEditBoxMixin">
+	<Size>
+		<AbsDimension x="0" y="20"/>
+	</Size>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parentLabel" parentKey="label" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="LEFT" x="12"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<EditBox inherits="InputBoxTemplate" name="$parentEditBox" parentKey="input" autoFocus="false">
+			<Size>
+				<AbsDimension x="0" y="20"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.label" relativePoint="RIGHT" x="10"/>
+				<Anchor point="RIGHT" x="-12"/>
+			</Anchors>
+			<Scripts>
+				<OnEnterPressed>
+					self:ClearFocus()
+				</OnEnterPressed>	
+				<OnLoad>
+					EasyDestroy.RegisterFrame(self, "EditBox")
+				</OnLoad>
+			</Scripts>
+		</EditBox>
+	</Frames>
+</Frame>
+
+<Frame name="EasyDestroyEditBoxRangeTemplate" virtual="true" mixin="EasyDestroyEditBoxRangeMixin">
+	<Size>
+		<AbsDimension x="0" y="20"/>
+	</Size>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parentLabel" parentKey="label" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="LEFT" x="12"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Frames>
+		<EditBox inherits="InputBoxTemplate" name="$parentEditBoxFrom" parentKey="inputfrom" autoFocus="false">
+			<Size>
+				<AbsDimension x="40" y="20"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.label" relativePoint="RIGHT" x="30"/>
+			</Anchors>
+			<Scripts>
+				<OnEnterPressed>
+					self:ClearFocus()
+				</OnEnterPressed>	
+				<OnLoad>
+					EasyDestroy.RegisterFrame(self, "EditBox")
+				</OnLoad>
+			</Scripts>
+		</EditBox>
+		<EditBox inherits="InputBoxTemplate" name="$parentEditBoxTo" parentKey="inputto" autoFocus="false">
+			<Size>
+				<AbsDimension x="40" y="20"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT" relativeKey="$parent.inputfrom" relativePoint="RIGHT" x="30"/>
+			</Anchors>
+			<Scripts>
+				<OnEnterPressed>
+					self:ClearFocus()
+				</OnEnterPressed>	
+				<OnLoad>
+					EasyDestroy.RegisterFrame(self, "EditBox")
+				</OnLoad>
+			</Scripts>
+		</EditBox>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			local d = self:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+			d:SetText("—")
+			d:SetPoint("LEFT", self.inputfrom, "RIGHT", -4, 0)
+			d:SetPoint("RIGHT", self.inputto, "LEFT")
+		</OnLoad>
+	</Scripts>
+</Frame>
+
+<Frame name="EasyDestroyItemTemplate" virtual="true" enableMouse="true" inherits="BackdropTemplate" mixin="EasyDestroyItemsMixin">
+	<Size>
+		<AbsDimension x="0" y="24"/>
+	</Size>
+	<Layers>
+		<Layer level="OVERLAY">
+			<Texture name="$parentIcon" parentKey="Icon">
+				<Size>
+					<AbsDimension x="20" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="LEFT" x="12" y="0"/>
+				</Anchors>
+			</Texture>
+			<FontString name="$parentItemLevel" parentKey="ItemLevel" inherits="GameFontNormal" justifyH="LEFT">
+				<Anchors>
+					<Anchor point="RIGHT"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" x="-34" y="0"/>>
+				</Anchors>
+			</FontString>
+			<FontString name="$parentItem" parentKey="Item" inherits="GameFontNormal" wordwrap="true" maxLines="2" justifyH="LEFT" indented="true">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="LEFT" x="40" y="0"/>
+					<Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parentItemLevel" x="-8" y="0"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+		<Layer level="HIGHLIGHT">
+			<Texture setAllPoints="true">
+				<Color r="1" g="1" b="1" a="0.15"/>
+			</Texture>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnEnter>
+			local x, y = GetCursorPosition()
+			local width = GetScreenWidth() or 0
+			local anchor = "ANCHOR_RIGHT"
+			if x > (width/2) then anchor="ANCHOR_LEFT" end
+			if self.item.itemLink then 
+				GameTooltip:SetOwner(self, anchor)
+				GameTooltip:SetHyperlink(self.item.itemLink)
+				GameTooltip:Show()
+			end
+		</OnEnter>
+		<OnLeave>
+			GameTooltip:Hide()
+		</OnLeave>
+	</Scripts>
+</Frame>
+
+<CheckButton name="EasyDestroyCheckboxTemplate" virtual="true" inherits="ChatConfigBaseCheckButtonTemplate" mixin="EasyDestroyCheckboxMixin">
+	<Size>
+		<AbsDimension x="24" y="24"/>
+	</Size>
+	<Layers>
+		<Layer level="OVERLAY">
+			<FontString name="$parentLabel" parentKey="label" inherits="GameFontNormalSmall">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	<Scripts>
+		<OnLoad>
+			EasyDestroy.RegisterFrame(self, "CheckButton")
+		</OnLoad>
+	</Scripts>
+</CheckButton>
+
+<Frame name="EasyDestroyFramedCheckboxTemplate" virtual="true" mixin="EasyDestroyFramedCheckboxMixin">
+	<Size>
+		<AbsDimension x="0" y="24"/>
+	</Size>
+	<Frames>
+		<Frame parentKey="OnHover" setAllPoints="true">
+			<Scripts>
+				<OnLoad>
+					self:SetMouseClickEnabled(false)
+				</OnLoad>
+				<OnEnter>
+					if self.SetTooltip and type(self.SetTooltip) == "function" then
+						self:SetTooltip()
+					end
+				</OnEnter>
+				<OnLeave>
+					if self.SetTooltip and type(self.SetTooltip) == "function" then
+						GameTooltip:Hide()
+					end
+				</OnLeave>
+			</Scripts>
+		</Frame>
+		<CheckButton name="$parentCheckbutton" parentKey="Checkbutton" inherits="ChatConfigBaseCheckButtonTemplate" enableMouse="true">
+			<Size>
+				<AbsDimension x="24" y="24"/>
+			</Size>
+			<Anchors>
+				<Anchor point="LEFT"/>
+			</Anchors>
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString name="$parentLabel" parentKey="label" inherits="GameFontNormalSmall" wordwrap="true" maxLines="2">
+						<Anchors>
+							<Anchor point="LEFT" relativePoint="RIGHT"/>
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					EasyDestroy.RegisterFrame(self, "CheckButton")
+				</OnLoad>
+			</Scripts>
+		</CheckButton>
+	</Frames>
+	<Scripts>
+		<OnLoad>
+			self.allowresize = true
+		</OnLoad>
+		<OnShow>
+			if self.allowresize then 
+				self:SetWidth(self.Checkbutton.label:GetStringWidth() + self.Checkbutton:GetWidth())
+			end
+		</OnShow>
+		<!-- <OnEnter>
+			if self.SetTooltip and type(self.SetTooltip) == "function" then
+				self:SetTooltip()
+			end
+		</OnEnter>
+		<OnLeave>
+			if self.SetTooltip and type(self.SetTooltip) == "function" then
+				GameTooltip:Hide()
+			end
+		</OnLeave> -->
+	</Scripts>
+</Frame>
+
+<Frame name="EasyDestroyRarityFilter" virtual="true">
+	<Size>
+		<AbsDimension x="0" y="70"/>
+	</Size>
+	<Layers>	
+		<Layer>
+			<Texture name="$parentTitle" parentArray="title">
+				<Size><AbsDimension x="80" y="10"/></Size>
+				<Color a="0" r="0" g="0" b="0"/>
+				<Anchors>
+					<Anchor point="TOP" relativePoint="TOP" x="0" y="-4"/>
+				</Anchors>
+			</Texture>
+			<FontString text="Item Quality" inherits="GameFontNormalSmall" parentKey="label">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parentTitle"/>
+				</Anchors>
+			</FontString>
+		</Layer>
+	</Layers>
+	
+	<Frames>
+		<CheckButton name="$parentCommon" parentKey="common" parentArray="Rarity" inherits="EasyDestroyCheckboxTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="20" y="-12"/>
+			</Anchors>
+		</CheckButton>
+		<CheckButton name="$parentUncommon" inherits="EasyDestroyCheckboxTemplate" parentKey="uncommon" parentArray="Rarity" >
+			<Anchors>
+				<Anchor point="TOPLEFT" relativePoint="TOP" x="30" y="-12"/>
+			</Anchors>
+		</CheckButton>
+		<CheckButton name="$parentRare" inherits="EasyDestroyCheckboxTemplate" parentKey="rare" parentArray="Rarity" >
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentCommon" relativePoint="BOTTOMLEFT"/>
+			</Anchors>
+		</CheckButton>
+		<CheckButton name="$parentEpic" inherits="EasyDestroyCheckboxTemplate" parentKey="epic" parentArray="Rarity" >
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parentUncommon" relativePoint="BOTTOMLEFT"/>
+			</Anchors>
+		</CheckButton>
+		
+		<!-- Apparently SecureActionButtonTemplate doesnt' like being too many frames down as a child and refuses to show up
+		In order to get around this I had to use an InsecureActionButtonTemplate. Couldn't find any good documentation
+		of this functionality or limits on the SecureActionButtonTemplate so this is sort of bestguess as to why it didn't work. -->
+	</Frames>
+	<!--- gone in DF, need to find replacement?
+	<Backdrop edgeFile="Interface\Buttons\WHITE8x8" tile="true">			
+		<EdgeSize val="2"/>
+		<BorderColor a="1" r="0.99" g="0.81" b="0"/>
+	</Backdrop>
+	-->
+</Frame>
+<Frame name="EasyDestroyItemScrollTemplate" inherits="BackdropTemplate" virtual="true" mixin="EasyDestroyScrollMixin">
+	<Anchors>
+		<Anchor point="TOPLEFT" x="4"/>
+		<Anchor point="BOTTOMRIGHT" x="-4"/>
+	</Anchors>
+	<Frames>
+		<ScrollFrame name="$parentScrollFrame" parentKey="ScrollFrame" inherits="FauxScrollFrameTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativeTo="$parent" x="0" y="-5"/>
+				<Anchor point="BOTTOMRIGHT" RelativeTo="$parent" x="0" y="5"/>
+			</Anchors>
+			<!--<Scripts>
+				<OnVerticalScroll>
+					FauxScrollFrame_OnVerticalScroll(self, offset, 24, EasyDestroyItemsScrollBar_Update);
+				</OnVerticalScroll>
+			</Scripts>-->
+			<Size>
+				<AbsDimension x="31" y="239"/>
+			</Size>
+		</ScrollFrame>
+		<Button name="$parentItem1" inherits="EasyDestroyItemTemplate" parentKey="Item1">
+			<Anchors>
+				<Anchor point="TOPRIGHT" RelativePoint="TOPRIGHT" RelativeTo="$parent">
+					<Offset>
+						<AbsDimension x="0" y="-4" />
+					</Offset>
+				</Anchor>
+				<Anchor point="LEFT" RelativePoint="LEFT" RelativeTo="$parent" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem2" inherits="EasyDestroyItemTemplate" parentKey="Item2">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem1" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem1" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem3" inherits="EasyDestroyItemTemplate" parentKey="Item3">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem2" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem2" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem4" inherits="EasyDestroyItemTemplate" parentKey="Item4">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem3" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem3" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem5" inherits="EasyDestroyItemTemplate" parentKey="Item5">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem4" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem4" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem6" inherits="EasyDestroyItemTemplate" parentKey="Item6">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem5" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem5" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem7" inherits="EasyDestroyItemTemplate" parentKey="Item7">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem6" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem6" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem8" inherits="EasyDestroyItemTemplate" parentKey="Item8">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem7" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem7" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem9" inherits="EasyDestroyItemTemplate" parentKey="Item19">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem8" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem8" />
+			</Anchors>
+		</Button>
+		<Button name="$parentItem10" inherits="EasyDestroyItemTemplate" parentKey="Item10">
+			<Anchors>
+				<Anchor point="TOPLEFT" RelativePoint="BOTTOMLEFT" RelativeTo="$parentItem9" />
+				<Anchor point="TOPRIGHT" RelativePoint="BOTTOMRIGHT" RelativeTo="$parentItem9" />
+			</Anchors>
+		</Button>
+	</Frames>
+</Frame>
+
+</Ui>

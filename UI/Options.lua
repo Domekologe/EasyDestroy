@@ -1,0 +1,222 @@
+local optionsFrame = CreateFrame("Frame", 'EasyDesteroy_OptionsFrame', InterfaceOptionsFramePanelContainer)
+optionsFrame.name = EasyDestroy.AddonName
+
+EasyDestroy.UI.Options = optionsFrame
+local protected  = {}
+
+local category, layout
+
+function EasyDestroy.UI.Options.__init()
+    optionsFrame:SetScript("OnShow", EasyDestroy_OnOptionsShow)
+
+    local category, layout = Settings.RegisterCanvasLayoutCategory(optionsFrame, optionsFrame.name, optionsFrame.name)
+    category.ID = optionsFrame.name
+    Settings.RegisterAddOnCategory(category)
+
+    EasyDestroy.UI.Options.category   = category
+    EasyDestroy.UI.Options.categoryID = category.ID
+end
+
+function protected.ShowTooltip(frame, tt)
+
+    GameTooltip:SetOwner(frame, "ANCHOR_TOP")
+    GameTooltip:ClearLines()
+    GameTooltip:AddLine(tt, 1, 1, 1, 1)
+    GameTooltip:Show()
+
+end
+
+function protected.CreateOptionsForFrame(frame, optionTable)
+
+    local column, rowFirstFrame, rowLastFrame = 0, nil, nil
+
+    for k, v in ipairs(optionTable) do
+        column = 0
+        if v and v.key and v.text then
+
+            local f = CreateFrame("Frame", nil, frame, "EasyDestroyFramedCheckboxTemplate")
+            f.allowresize = false
+            f:SetLabel(v.text)
+            f:SetWidth(v.width or 128)
+
+            if not rowFirstFrame then
+                f:SetPoint("TOPLEFT", 20, -20)
+            else
+                f:SetPoint("TOPLEFT", rowFirstFrame, "BOTTOMLEFT")
+            end
+
+            f:Show()
+            if v.tooltip then 
+                f.OnHover.SetTooltip = function(self) protected.ShowTooltip(self, v.tooltip) end 
+            --f:HookScript("OnEnter", function(self) ShowTooltip(self, v.tooltip) end )
+            end
+
+            if v.OnClick then f.Checkbutton:HookScript("OnClick", v.OnClick) end
+
+            if v.optionType == "boolean" then 
+                f:SetChecked(EasyDestroy.Data.Options[v.key])
+            elseif v.value then
+                if bit.band(EasyDestroy.Data.Options.Actions, v.value) > 0 then
+                    f:SetChecked(true)
+                end
+            end
+
+            rowFirstFrame = f
+        else
+            for i, j in ipairs(v) do
+                if j and j.key and j.text then
+                    local f = CreateFrame("Checkbutton", nil, frame, "EasyDestroyFramedCheckboxTemplate")
+                    f.allowresize = false
+                    f:SetLabel(j.text)
+                    f:SetWidth(j.width or 128)
+
+                    if not rowFirstFrame then
+                        f:SetPoint("TOPLEFT", 20, -20)
+                        rowFirstFrame = f
+                    elseif column == 0 then
+                        f:SetPoint("TOPLEFT", rowFirstFrame, "BOTTOMLEFT")
+                        rowFirstFrame = f
+                    else
+                        f:SetPoint("LEFT", rowLastFrame, "RIGHT")
+                    end
+                    f:Show()
+                    if j.tooltip then 
+                        f.OnHover.SetTooltip = function(self) protected.ShowTooltip(self, j.tooltip) end 
+                    end
+                    f:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
+
+                    if j.OnClick then f.Checkbutton:HookScript("OnClick", j.OnClick) end
+
+                    if j.optionType == "boolean" then 
+
+                        local optval
+
+                        if string.find(j.key, '.') then
+                            local func, err = loadstring('return EasyDestroy.Data.Options.' .. j.key)
+
+                            if func then optval = func() end 
+                        else
+                            optval = EasyDestroy.Data.Options[j.key]
+                        end
+
+
+                        f:SetChecked(optval)
+                    elseif j.value then
+                        if bit.band(EasyDestroy.Data.Options.Actions, j.value) > 0 then
+                            f:SetChecked(true)
+                        end
+                    end
+
+                    rowLastFrame = f
+                    column = column + 1
+
+                end
+            end
+        end
+    end
+end
+
+function protected.SplitKey(key)
+    -- local keys = { strsplit('.', key) }
+
+    -- for k in ipairs(key) do
+    
+    return 
+
+end
+
+
+
+function EasyDestroy_OnOptionsShow()
+
+    local baseFrame = CreateFrame("Frame", nil, optionsFrame)
+
+    baseFrame:SetAllPoints()
+
+    local easyDestroyOptionsTable = {
+        {
+            {
+                key = "CharacterFavorites",
+                text = "Character Favorites",
+                OnClick = function(self) 
+                    local dialog = StaticPopup_Show("ED_RELOAD_CURRENT_FILTER")
+                    if dialog then dialog.data = self end
+                end,
+                tooltip = "Enables/Disables the use of character-specific favorites.\n\n|cFFFF2934Changing this will require reloading the current filter.|r",
+                optionType = "boolean",
+            },
+            {
+                key = "AutoBlacklist",
+                text = "Auto-Blacklist Non-Destroyables",
+                width = 196,
+                OnClick = function() EasyDestroy.Data.Options.AutoBlacklist = not EasyDestroy.Data.Options.AutoBlacklist end,
+                tooltip = "If selected, when you try to destroy items that cannot be destroyed they will automatically be added to the blacklist.",
+                optionType = "boolean",
+            },
+            {
+                key="MinimapIcon.hide",
+                text = "Hide Minimap Icon",
+                OnClick = function() 
+
+                    if EasyDestroy.Data.Options.MinimapIcon then 
+                        EasyDestroy.Data.Options.MinimapIcon.hide = not EasyDestroy.Data.Options.MinimapIcon.hide
+                    end
+
+                    if EasyDestroy.Data.Options.MinimapIcon.hide then 
+                        EasyDestroy.MinimapIcon:Hide("EasyDestroy")
+                    else
+                        EasyDestroy.MinimapIcon:Show("EasyDestroy")
+                    end
+
+                end,
+                tooltip = "If selected, the minimap icon will be hidden.",
+                optionType = "boolean",
+            }
+        }
+    }
+    local destroyOptionsTable = {
+        {
+            
+        },
+    }
+    
+
+    local addonOptions = CreateFrame("Frame", nil, baseFrame, BackdropTemplateMixin and "BackdropTemplate")
+    addonOptions:SetPoint("TOPLEFT", 30, -30)
+    addonOptions:SetPoint("RIGHT", -30, -30)
+    addonOptions:SetHeight(60)
+    addonOptions:SetBackdrop({
+		bgFile="Interface\\Tooltips\\UI-Tooltip-Background",
+		edgeFile="Interface\\Buttons\\WHITE8x8", 
+		edgeSize=1,
+		tile=true, 
+		tileEdge=false, 
+		insets={left=1, right=1, top=1, bottom=1}
+	})
+    addonOptions:SetBackdropColor(0,0,0,0.5)
+    addonOptions:SetBackdropBorderColor(0,0,0,1)
+    addonOptions:Show()
+
+    addonOptions.label = addonOptions:CreateFontString(nil, "OVERLAY", "GameTooltipText")
+    addonOptions.label:SetPoint("BOTTOMLEFT", addonOptions, "TOPLEFT", 4 , 2)
+    addonOptions.label:SetText("EasyDestroy Options")
+    optionsFrame.addonOptions = addonOptions
+
+    protected.CreateOptionsForFrame(addonOptions, easyDestroyOptionsTable)
+
+    local clearSessionButton = CreateFrame("Button", nil,  baseFrame, "UIPanelButtonTemplate")
+    clearSessionButton:SetPoint("TOPLEFT", addonOptions, "BOTTOMLEFT", 0, -30)
+    clearSessionButton:SetSize(160, 30)
+    clearSessionButton:SetText("Clear Session Ignored Items")
+    clearSessionButton:SetScript("OnClick", function()
+        EasyDestroy.Blacklist.ClearSession()
+    end)
+
+    optionsFrame.clearSessionButton = clearSessionButton
+    
+    optionsFrame:SetScript("OnShow", nil)
+    baseFrame:Show()
+    
+    EasyDestroy.Events:Fire("ED_OPTIONS_LOADED")
+
+end

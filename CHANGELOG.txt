@@ -1,0 +1,149 @@
+20230206 - 3.2.1
+- Update macro to work with DF macro changes for /click
+20230206 - 3.2.0
+- Updated TOC file
+- changes to access updated Blizzard container API
+- changes from LE lua enums to Enum.* enums
+
+20220519 - 3.1.2
+- Updated TOC file
+
+20210309 - 3.0.6
+- Updated TOC file
+
+20210306 - 3.0.5
+- code cleanup and change to event/callback based system
+- separated out UI and API type functionality
+- Added option to turn off minimap icon
+- Added button for clearing the session item ignore cache (temporary blacklist)
+- Removed a number of tables and objects from the global namespace
+
+TODO - fix counts for stackable items as they are destroyed 
+What is ButtonWasClicked and is it still necessary?
+
+20210304 - 3.0.4
+- bug fix, item window not refreshing when opening
+
+20210303 - 3.0.3
+- tuning of caching
+- fixing blacklist bug regarding item names
+- fixed bugs that would require new users to reload before things would work
+- added alert system for being able to provide information/alerts when updates are made
+
+20210303 - 3.0.2b
+- Added support to automatically blacklist items that can't be disenchanted after the first time you try.
+    e.g. Item A cannot be disenchanted but still shows up in the Item Window. You click "Destroy" and the 
+    item fails with an error that it can't be disenchanted. The addon will automatically add the item to 
+    the blacklist.
+- Added option to Options window for turning this on or off.
+- Updated launcher so that right clicking opens the Options window.
+
+20210302 - 3.0.1b 
+- Fixed issue with the herb/ore restacking (infinite loops or failing to complete).
+
+20210302 - 3.0.0b addenda
+- Missed noting the addition of a context menu on the item window for adding items to
+    a session blacklist and the normal blacklist.
+
+20210302 - 3.0.0b
+- Added support for keybinding the Destroy button to whatever you want.
+- Changed Disenchant button to Destroy
+- Added support for milling and prospecting.
+- Added Options window
+- Added Filter Criteria - Item Count
+- Added Filter Criteria - Item Types
+- Renamed New From Current to "Save Filter As"
+- Added support for auto-stacking herbs and ore when they show up in the Item window
+- Code cleanup, removing things from the global scope as much as possible, removing redundant code
+- Added in dictionary for herbs and ores that can be processed.
+- Bug fixes
+- Spelling fix
+
+20210225 - 2.1.0b
+- Code cleanup, Libs added to directory, file structure updated.
+- NOTE: It would be best to delete the addon from your Interface\AddOns folder and then reinstall it. 
+    There has been a number of changes to files, file names, and file locations. 
+- Added Data Text (LDB) and Minimap Icon (LibDBIcon).
+
+20210223 - 2.0.6b
+- Minor fix to items template window.
+
+20210223 - 2.0.5b
+- Homogenized a number of areas in the code base for maintainability.
+- Vastly improved memory handling through caching
+- Created 3 classes of objects (EasyDestroyItem, EasyDestroyFilterCriteria, EasyDestroyFilter)
+    - EasyDestroyFilterCriteria is the main class for filter criteria.
+    - Has a few abstract methods that must be met in order for a filter to be valid.
+    - EasyDestroyItem simplifies how the items are shown, accessed, etc.
+    - EasyDestroyFilter handles most of the logic for the creation and modification of a filter.
+- Implemented the above classes throughout the addon.
+- Added experimental support for AddOnSkins
+- Bug fixes
+- Set the groundwork for implementing support for milling herbs and prospecting ore.
+
+20210216 - 2.0.4
+- Fixed issue with item level not displaying in the item list window.
+- Hid some debugging messages that previously got missed.
+
+20210215 - 2.0.3
+- Bug fixes
+- Configurator visibility state is saved now. So if you hid it, it will stay hidden even upon reloads/relogs.
+
+20210214 - 2.0.2b
+- Bug fixes
+- Made Configurator area hideable
+
+20210213 - 2.0.1b
+- Code cleanup
+- Further redundancy removal/standardization
+- Moved favorites related functions to a new file for clarity.
+- Significantly reduced memory usage from filter modifications/changing.
+- Bug fixes.
+- Added comments to a number of functions.
+
+20210213 - 2.0.0b
+- UI overhaul (one window = better?)
+- Added the ability for character specific favorites. However, I have not yet finished an options window.
+    '/ed cf true' will turn on character specific favorites. 
+- Added some logic around enabling/disabling the disenchant button when moving.
+- Removed Filters.xml
+- Reduced rampant redundancies through code
+
+20210208
+- Added instructions in the Item Blacklist
+- More bugfixes
+
+20210207
+- bug fixes
+- Default Filter updated. Now excludes all items that aren't common, uncommon, rare, epic (white, green, blue, purple)
+- Item Blacklist Added
+    - Items are blacklisted based on their itemid, item level, and quality.
+    - Shadowlands Legendaries are filtered by their names due to how they are handled with bonus ids
+- Updated the logic for filtering items to have better short circuiting logic (should improve speed).
+- Added list for item id's that should be filtered out by default. Currently only lists the boards for the mechagon trinket
+
+20210204
+- Added in logic for blacklists
+- Filters now come in two types. Searches (items you want to see) and Blacklists.
+- Blacklists are universally applied. When creating a blacklist you are able to see
+    in the main window which items that filter will exclude from searches. 
+- Added a confirmation dialog for deleting filters.
+- Added a confirmation dialog for when you set a new favorite.
+- Added a warning dialog when you attempt to set a favorited filter as a blacklist.
+- Added a warning dialog when you attempt to save a new filter with the same name as
+    an existing filter.
+- Added a warning dialog when you check the Blacklist box on a filter without having
+    the Blacklists box checked on the main window. When updating/modifying/creating
+    blacklists you should have that box checked, and vice versa for Searches.
+- Fixed bug where Disenchant button wasn't reenabled if Disenchant was interrupted.
+- More code cleanup
+- Some cleanup of the frames.
+
+20210130
+- Fixed bugs with filters for BOE items and items in Equipment Sets
+- Addressed enabling/disabling of Disenchant button if a user enters combat
+- Addressed re-enabling the button when/if a disenchant cast fails
+
+20210129
+- Overhauled filter system
+- Added BOE Item and Equipment Set filters
