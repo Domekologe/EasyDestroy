@@ -1,0 +1,45 @@
+name: Build & Release Addon
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version from TOC
+        id: version
+        run: |
+          VERSION=$(grep "^## Version:" EasyDestroy.toc | sed 's/## Version: //')
+          if [ -z "$VERSION" ]; then
+            echo "❌ Version not found in EasyDestroy.toc"
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Prepare addon folder
+        run: |
+          mkdir EasyDestroy
+          cp EasyDestroy.toc EasyDestroy.lua EasyDestroy/
+          cp -r libs locales EasyDestroy/
+
+      - name: Create ZIP
+        run: |
+          ZIP="EasyDestroy-${{ steps.version.outputs.version }}.zip"
+          zip -r "$ZIP" EasyDestroy
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
+          files: EasyDestroy-*.zip

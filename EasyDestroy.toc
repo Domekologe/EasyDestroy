@@ -1,5 +1,5 @@
-## Interface: 50501,50502
-## Version: 4.0.4
+## Interface: 50503
+## Version: 4.0.5
 ## Title: EasyDestroy
 ## Notes: Disenchant, Milling and Prospecting made easy
 ## Author: CWAGrant, Domekologe
