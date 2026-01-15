@@ -50,6 +50,16 @@ jobs:
             --exclude='*.zip' \
             ./ "${{ steps.meta.outputs.addon }}/"
 
+      - name: Create ZIP
+        run: |
+          ZIP="${{ steps.meta.outputs.addon }}-${{ steps.meta.outputs.version }}.zip"
+          zip -r "$ZIP" "${{ steps.meta.outputs.addon }}"
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.version }}
+          name: ${{ steps.meta.outputs.addon }}-${{ steps.meta.outputs.version }}
+          files: "*.zip"    
       - name: Read CHANGELOG
         id: changelog
         run: |
@@ -66,13 +76,6 @@ jobs:
           echo "content<<EOF" >> $GITHUB_OUTPUT
           echo "$CONTENT" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Create or update release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.meta.outputs.version }}
-          name: Release ${{ steps.meta.outputs.version }}
-          files: "*.zip"
 
       - name: Upload to CurseForge
         uses: itsmeow/curseforge-upload@v3
